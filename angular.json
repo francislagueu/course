@@ -34,8 +34,8 @@
               "src/styles.scss"
             ],
             "scripts": [],
-            "buildOptimizer": true,
-            "optimization": true,
+            "buildOptimizer": false,
+            "optimization": false,
             "vendorChunk": true,
             "extractLicenses": true,
             "sourceMap": true,
@@ -62,7 +62,9 @@
                 }
               ],
               "outputHashing": "all",
-              "sourceMap": false
+              "sourceMap": false,
+              "buildOptimizer": true,
+              "optimization": true
             },
             "dev": {
 
