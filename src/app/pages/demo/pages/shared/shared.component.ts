@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {markFormGroupTouched, regex, regexErrors} from "@app/shared";
+import {ControlItem} from "@app/models/frontend";
+import {NotificationService} from "@app/services";
+
 
 @Component({
   selector: 'app-shared',
@@ -7,9 +12,125 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SharedComponent implements OnInit {
 
-  constructor() { }
-
-  ngOnInit(): void {
+  form: FormGroup;
+  isInline: boolean;
+  regexErrors = regexErrors;
+  items: ControlItem[];
+  showSpinner = false;
+  constructor(private fb: FormBuilder, private notification: NotificationService) {
+    this.isInline = true;
+    this.items = [
+      {label: 'First', value: 1},
+      {label: 'Second', value: 2},
+      {label: 'Third', value: 3},
+      {label: 'Fourth', value: 4},
+      {label: 'Fifth', value: 5}
+    ]
   }
 
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      input: [null, {
+        updateOn: 'blur',
+        validators: [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.pattern(regex.numbers)
+        ]
+      }],
+      password: [null, {
+        updateOn: 'blur',
+        validators: [
+          Validators.required
+        ]
+      }],
+      select: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }],
+      checkboxes: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }],
+      radios: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }],
+      date: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }],
+      dateRange: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }],
+      autocomplete: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }]
+    });
+  }
+
+  onPatchedValue(): void{
+    this.form.patchValue({
+      input: 'test',
+      password: 'qwerty',
+      autocomplete: 1,
+      select: 2,
+      checkboxes: [3],
+      radios: 4,
+      date: new Date().getTime(),
+      dateRange: {
+        from: new Date(2020, 5,10).getTime(),
+        to: new Date(2020, 5, 25).getTime()
+      }
+    });
+  }
+
+  onSubmit(): void{
+    console.log('Submit!!');
+    if(!this.form.valid){
+      markFormGroupTouched(this.form);
+    }
+  }
+
+  onToggleInline(){
+    this.isInline = !this.isInline;
+  }
+
+  onToggleDisable(): void{
+    if(this.form.enabled){
+      console.log("Disabling....")
+      this.form.disable();
+    }else{
+      console.log("Enabling....")
+      this.form.enable();
+    }
+  }
+
+  onToggleSpinner(): void{
+    this.showSpinner = !this.showSpinner;
+  }
+  onSuccess(): void{
+    this.notification.success('Everything is fine!');
+  }
+  onError(): void{
+    this.notification.error('Ooops!! Something went wrong')
+  }
+
+  onFilesChanged(urls: string | string[]): void{
+    console.log('urls = ', urls);
+  }
 }
